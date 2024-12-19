@@ -1,0 +1,49 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+/.env
+/postgres/data/name.basics.tsv
+/postgres/data/title.akas.tsv
+/postgres/data/title.basics.tsv
+/postgres/data/title.crew.tsv
+/postgres/data/title.episode.tsv
+/postgres/data/title.principals.tsv
+/postgres/data/title.ratings.tsv
+/postgres/data/limited/name.basics.tsv
+/postgres/data/limited/title.akas.tsv
+/postgres/data/limited/title.basics.tsv
+/postgres/data/limited/title.crew.tsv
+/postgres/data/limited/title.episode.tsv
+/postgres/data/limited/title.principals.tsv
+/postgres/data/limited/title.ratings.tsv
