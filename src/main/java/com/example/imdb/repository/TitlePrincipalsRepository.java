@@ -14,10 +14,10 @@ import org.springframework.stereotype.Repository;
 public interface TitlePrincipalsRepository extends JpaRepository<TitlePrincipals, TitlePrincipalsId> {
 
     @Query(value = """
-            SELECT tp1.*
-            FROM title_principals tp1
-            JOIN title_principals tp2 ON tp1.tconst = tp2.tconst
-            WHERE tp1.nconst = :actor1 AND tp2.nconst = :actor2
+            SELECT titlePrincipals1.*
+            FROM title_principals titlePrincipals1
+            JOIN title_principals titlePrincipals2 ON titlePrincipals1.tconst = titlePrincipals2.tconst
+            WHERE titlePrincipals1.nconst = :actor1 AND titlePrincipals2.nconst = :actor2
             """,
             nativeQuery = true
     )
@@ -25,12 +25,12 @@ public interface TitlePrincipalsRepository extends JpaRepository<TitlePrincipals
 
 
     @Query(value = """
-            SELECT tp1.*
-            FROM title_principals tp1
-            JOIN title_principals tp2 ON tp1.tconst = tp2.tconst
-            JOIN name_basics nb1 ON tp1.nconst = nb1.nconst
-            JOIN name_basics nb2 ON tp2.nconst = nb2.nconst
-            WHERE nb1.primary_name = :actorName1 AND nb2.primary_name = :actorName2
+            SELECT titlePrincipals1.*
+            FROM title_principals titlePrincipals1
+            JOIN title_principals titlePrincipals2 ON titlePrincipals1.tconst = titlePrincipals2.tconst
+            JOIN name_basics nameBasics1 ON titlePrincipals1.nconst = nameBasics1.nconst
+            JOIN name_basics nameBasics2 ON titlePrincipals2.nconst = nameBasics2.nconst
+            WHERE nameBasics1.primary_name = :actorName1 AND nameBasics2.primary_name = :actorName2
             """,
             nativeQuery = true
     )

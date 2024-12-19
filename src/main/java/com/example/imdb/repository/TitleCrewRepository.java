@@ -13,20 +13,12 @@ public interface TitleCrewRepository extends JpaRepository<TitleCrew, String> {
 
     @Query(
             value = """
-            SELECT tc.*
-            FROM title_crew tc
-            JOIN title_basics tb ON tb.tconst = tc.tconst
-            JOIN name_basics nb ON nb.nconst = ANY(string_to_array(tc.directors, ','))
-                AND nb.nconst = ANY(string_to_array(tc.writers, ','))
-            WHERE nb.death_year IS NULL
-        """,
-            countQuery = """
-            SELECT COUNT(*)
-            FROM title_crew tc
-            JOIN title_basics tb ON tb.tconst = tc.tconst
-            JOIN name_basics nb ON nb.nconst = ANY(string_to_array(tc.directors, ','))
-                AND nb.nconst = ANY(string_to_array(tc.writers, ','))
-            WHERE nb.death_year IS NULL
+            SELECT titleCrew.*
+            FROM title_crew titleCrew
+            JOIN title_basics titleBasics ON titleBasics.tconst = titleCrew.tconst
+            JOIN name_basics nameBasics ON nameBasics.nconst = ANY(string_to_array(titleCrew.directors, ','))
+                AND nameBasics.nconst = ANY(string_to_array(titleCrew.writers, ','))
+            WHERE nameBasics.death_year IS NULL
         """,
             nativeQuery = true
     )

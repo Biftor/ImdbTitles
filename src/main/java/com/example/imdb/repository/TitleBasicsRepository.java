@@ -15,20 +15,12 @@ public interface TitleBasicsRepository extends JpaRepository<TitleBasics, String
 
     @Query(
             value = """
-            SELECT tb.*
-            FROM title_basics tb
-            JOIN title_crew tc ON tb.tconst = tc.tconst
-            JOIN name_basics nb ON nb.nconst = ANY(string_to_array(tc.directors, ','))
-                AND nb.nconst = ANY(string_to_array(tc.writers, ','))
-            WHERE nb.death_year IS NULL
-        """,
-            countQuery = """
-            SELECT COUNT(*)
-            FROM title_basics tb
-            JOIN title_crew tc ON tb.tconst = tc.tconst
-            JOIN name_basics nb ON nb.nconst = ANY(string_to_array(tc.directors, ','))
-                AND nb.nconst = ANY(string_to_array(tc.writers, ','))
-            WHERE nb.death_year IS NULL
+            SELECT titleBasics.*
+            FROM title_basics titleBasics
+            JOIN title_crew titleCrew ON titleBasics.tconst = titleCrew.tconst
+            JOIN name_basics nameBasics ON nameBasics.nconst = ANY(string_to_array(titleCrew.directors, ','))
+                AND nameBasics.nconst = ANY(string_to_array(titleCrew.writers, ','))
+            WHERE nameBasics.death_year IS NULL
         """,
             nativeQuery = true
     )
@@ -36,13 +28,13 @@ public interface TitleBasicsRepository extends JpaRepository<TitleBasics, String
 
     @Query(
             value = """
-            SELECT tb.*
-            FROM title_basics tb
-            WHERE tb.tconst IN (
-                SELECT tp1.tconst
-                FROM title_principals tp1
-                JOIN title_principals tp2 ON tp1.tconst = tp2.tconst
-                WHERE tp1.nconst = :actor1 AND tp2.nconst = :actor2
+            SELECT titleBasics.*
+            FROM title_basics titleBasics
+            WHERE titleBasics.tconst IN (
+                SELECT titlePrincipals1.tconst
+                FROM title_principals titlePrincipals1
+                JOIN title_principals titlePrincipals2 ON titlePrincipals1.tconst = titlePrincipals2.tconst
+                WHERE titlePrincipals1.nconst = :actor1 AND titlePrincipals2.nconst = :actor2
             )
         """,
             nativeQuery = true
@@ -52,15 +44,15 @@ public interface TitleBasicsRepository extends JpaRepository<TitleBasics, String
 
     @Query(
             value = """
-            SELECT tb.*
-            FROM title_basics tb
-            WHERE tb.tconst IN (
-                SELECT tp1.tconst
-                FROM title_principals tp1
-                JOIN title_principals tp2 ON tp1.tconst = tp2.tconst
-                JOIN name_basics nb1 ON tp1.nconst = nb1.nconst
-                JOIN name_basics nb2 ON tp2.nconst = nb2.nconst
-                WHERE nb1.primary_name = :actorName1 AND nb2.primary_name = :actorName2
+            SELECT titleBasics.*
+            FROM title_basics titleBasics
+            WHERE titleBasics.tconst IN (
+                SELECT titlePrincipals1.tconst
+                FROM title_principals titlePrincipals1
+                JOIN title_principals titlePrincipals2 ON titlePrincipals1.tconst = titlePrincipals2.tconst
+                JOIN name_basics nameBasics1 ON titlePrincipals1.nconst = nameBasics1.nconst
+                JOIN name_basics nameBasics2 ON titlePrincipals2.nconst = nameBasics2.nconst
+                WHERE nameBasics1.primary_name = :actorName1 AND nameBasics2.primary_name = :actorName2
             )
         """,
             nativeQuery = true
@@ -69,51 +61,40 @@ public interface TitleBasicsRepository extends JpaRepository<TitleBasics, String
 
     @Query(
             value = """
-
-                    SELECT tb.*
-            FROM title_basics tb
-            JOIN title_ratings tr ON tb.tconst = tr.tconst
-            WHERE :genre = ANY(string_to_array(tb.genres, ','))
-            AND tb.start_year IS NOT NULL
-            AND tr.num_votes > 0
-            AND (tb.start_year, tr.num_votes) IN (
-                SELECT tb_inner.start_year, MAX(tr_inner.num_votes)
-                FROM title_basics tb_inner
-                JOIN title_ratings tr_inner ON tb_inner.tconst = tr_inner.tconst
-                WHERE :genre = ANY(string_to_array(tb_inner.genres, ','))
-                GROUP BY tb_inner.start_year
+            SELECT titleBasics.*
+            FROM title_basics titleBasics
+            JOIN title_ratings titleRatings ON titleBasics.tconst = titleRatings.tconst
+            WHERE :genre = ANY(string_to_array(titleBasics.genres, ','))
+            AND titleBasics.start_year IS NOT NULL
+            AND titleRatings.num_votes > 0
+            AND (titleBasics.start_year, titleRatings.num_votes) IN (
+                SELECT inner_titleBasics.start_year, MAX(inner_titleRatings.num_votes)
+                FROM title_basics inner_titleBasics
+                JOIN title_ratings inner_titleRatings ON inner_titleBasics.tconst = inner_titleRatings.tconst
+                WHERE :genre = ANY(string_to_array(inner_titleBasics.genres, ','))
+                GROUP BY inner_titleBasics.start_year
             )
-            ORDER BY tb.start_year DESC
-            """,
-            countQuery = """
-            SELECT COUNT(*)
-            FROM (
-                SELECT tb_inner.start_year
-                FROM title_basics tb_inner
-                JOIN title_ratings tr_inner ON tb_inner.tconst = tr_inner.tconst
-                WHERE :genre = ANY(string_to_array(tb_inner.genres, ','))
-                GROUP BY tb_inner.start_year
-            ) AS subquery
+            ORDER BY titleBasics.start_year DESC
             """,
             nativeQuery = true
     )
     Page<TitleBasics> getBestTitlesOfYearByGenrePaged(Pageable pageable, @Param("genre") String genre);
 
     @Query(value = """
-            SELECT tb.*
-            FROM title_basics tb
-            JOIN title_ratings tr ON tb.tconst = tr.tconst
-            WHERE :genre = ANY(string_to_array(tb.genres, ','))
-            AND tb.start_year IS NOT NULL
-            AND tr.num_votes > 0
-            AND (tb.start_year, tr.num_votes) IN (
-                SELECT tb_inner.start_year, MAX(tr_inner.num_votes)
-                FROM title_basics tb_inner
-                JOIN title_ratings tr_inner ON tb_inner.tconst = tr_inner.tconst
-                WHERE :genre = ANY(string_to_array(tb_inner.genres, ','))
-                GROUP BY tb_inner.start_year
+            SELECT titleBasics.*
+            FROM title_basics titleBasics
+            JOIN title_ratings titleRatings ON titleBasics.tconst = titleRatings.tconst
+            WHERE :genre = ANY(string_to_array(titleBasics.genres, ','))
+            AND titleBasics.start_year IS NOT NULL
+            AND titleRatings.num_votes > 0
+            AND (titleBasics.start_year, titleRatings.num_votes) IN (
+                SELECT inner_titleBasics.start_year, MAX(inner_titleRatings.num_votes)
+                FROM title_basics inner_titleBasics
+                JOIN title_ratings inner_titleRatings ON inner_titleBasics.tconst = inner_titleRatings.tconst
+                WHERE :genre = ANY(string_to_array(inner_titleBasics.genres, ','))
+                GROUP BY inner_titleBasics.start_year
             )
-            ORDER BY tb.start_year DESC
+            ORDER BY titleBasics.start_year DESC
             """, nativeQuery = true
     )
     List<TitleBasics> getBestTitlesOfYearByGenre(String genre);
